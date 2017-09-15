@@ -1,24 +1,16 @@
-# Audit VM Extensions
+# Create a NSG policy for NIC
 
-This policy will audit which VM extensions that are being deployed.
+A common scenario for network is to enforce specific NSGs on all the network interfaces and subnets.This example shows you how to do this by Azure Policy. 
 
-## Deploy Policy to Azure
+## Explain how it works by using Powershell
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/?feature.customportal=false&microsoft_azure_policy=true#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade)
+1. Explian new constraint Microsoft.Network/networkInterfaces/networkSecurityGroup.id can be used to enforce NSG on nic. 
 
-## How to create Policy Definition using PowerShell
+2. Open the azurepolicy.rules.json file and view the policy
 
-````powershell
-$definition = New-AzureRmPolicyDefinition -Name auditVmExtensions `
-                                          -DisplayName "Audit VM extensions" `
-                                          -Policy 'https://raw.githubusercontent.com/Azure/azure-policy-samples/master/samples/Compute/audit-vm-extension/azurepolicy.rules.json' `
-                                          -Parameter 'https://raw.githubusercontent.com/Azure/azure-policy-samples/master/samples/Compute/audit-vm-extension/azurepolicy.parameters.json'
-````
+3. Run demo.ps1 to create policy and assignment. It also creates a NSG and use it in the assignment.
 
-## How to create Policy Definitions using AzureCLI
+4. Go to the portal, create a network interface without using the NSG in West Central US where the NSG is created. Verify it will be blocked. This is ususally one of the steps in VM creation.
 
-````cli
+5. Go to the portal, create a network interface with the NSG. Verify it will be allowed.
 
-Az policy definition create –name auditVmExtension –policyUri 'github.com/raw/foo/azurepolicy.rules.json' – parametersUri 'github.com/raw/bar/azurepolicy.parameters.json'
-
-````
