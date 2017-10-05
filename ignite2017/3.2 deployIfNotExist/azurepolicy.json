@@ -1,0 +1,54 @@
+{
+    "properties": {
+        "displayName": "Deploy docker VM extension",
+        "description": "This policy deploys the docker VM extension.",
+        "policyRule": {
+          "if": {
+              "field": "type",
+              "equals": "Microsoft.Compute/virtualMachines"
+          },
+          "then": {
+            "effect": "deployIfNotExists",
+            "details": {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "existenceCondition": {
+                "field": "Microsoft.Compute/virtualMachines/extensions/type",
+                "equals": "DockerExtension"
+              },
+              "deployment": {
+                "properties": {
+                  "mode": "incremental",
+                  "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                      "vmName": { "type": "string" },
+                      "location": { "type": "string" }
+                    },
+                    "resources": [
+                      {
+                        "apiVersion": "2017-03-30",
+                        "name": "[concat(parameters('vmName'), '/', 'dockerExtension')]",
+                        "type": "Microsoft.Compute/virtualMachines/extensions",
+                        "location": "[parameters('location')]",
+                        "properties": {
+                          "publisher": "Microsoft.Azure.Extensions",
+                          "type": "DockerExtension",
+                          "typeHandlerVersion": "1.0",
+                          "autoUpgradeMinorVersion": true,
+                          "settings": { }
+                        }
+                      }
+                    ]
+                  },
+                  "parameters": {
+                    "vmName": { "value": "[field('name')]" },
+                    "location": { "value": "[field('location')]" }
+                  }
+                }
+              }
+            }
+           }
+        }
+     }
+  }
